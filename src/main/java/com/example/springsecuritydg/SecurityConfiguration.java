@@ -16,11 +16,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("admin").password(passwordEncoder().encode("admin123")).roles("ADMIN")
+                .withUser("admin")
+                    .password(passwordEncoder().encode("admin123"))
+                    .roles("ADMIN")
+                    .authorities("AT1", "AT2")
                 .and()
-                .withUser("alex").password(passwordEncoder().encode("alex123")).roles("USER")
+                .withUser("alex")
+                    .password(passwordEncoder().encode("alex123"))
+                    .roles("USER")
                 .and()
-                .withUser("manager").password(passwordEncoder().encode("manager123")).roles("MANAGER");
+                .withUser("manager")
+                    .password(passwordEncoder().encode("manager123"))
+                    .roles("MANAGER")
+                    .authorities("AT1");
     }
 
     @Override
@@ -31,7 +39,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/profile/**").authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/management/**").hasAnyRole("ADMIN", "MANAGER")
-                .antMatchers("/api/public/**").authenticated()
+                .antMatchers("/api/public/test1").hasAuthority("AT1")
+                .antMatchers("/api/public/test2").hasAuthority("AT2")
                 .and()
                 .httpBasic();
     }
